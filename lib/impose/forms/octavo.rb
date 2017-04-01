@@ -2,30 +2,14 @@ require 'impose/form'
 
 module Impose
   module Forms
-    module Octavo
-      class Wide < Form
-        per_signature 2
+    class Octavo < Form
+      per_signature 2
 
-        recto %w(3* *3 *0 0*),
-              %w(4. .4 .7 7.)
+      recto %w(3* *3 *0 0*),
+            %w(4. .4 .7 7.)
 
-        verso %w(1* *1 *2 2*),
-              %w(6. .6 .5 5.)
-      end
-
-      class Tall < Form
-        per_signature 2
-
-        recto %w(0. .0),
-              %w(3* *3),
-              %w(4. .4),
-              %w(7* *7)
-
-        verso %w(.1 1.),
-              %w(*2 2*),
-              %w(.5 5.),
-              %w(*6 6*)
-      end
+      verso %w(1* *1 *2 2*),
+            %w(6. .6 .5 5.)
     end
   end
 end
