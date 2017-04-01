@@ -1,0 +1,138 @@
+#!/bin/sh ruby
+
+require 'optparse'
+require 'impose/builder'
+
+def parse_page_size(dim)
+  match = dim.match(/^(\d+)x(\d+)$/)
+  if match
+    [match[1].to_i, match[2].to_i]
+  else
+    dim
+  end
+end
+
+def show_available_forms!
+  puts 'Available forms (with aliases, if any):'
+  Impose::Builder::PRIMARY_LAYOUTS.keys.each do |key|
+    aliases = if Impose::Builder::ALIASES[key].any?
+                ' (' + Impose::Builder::ALIASES[key].join(', ') + ')'
+              else
+                ''
+              end
+
+    puts " * #{key}#{aliases}"
+  end
+
+  exit(-1)
+end
+
+def show_available_paper_sizes!
+  puts 'Named paper sizes (with dimensions in points):'
+  PDF::Core::PageGeometry::SIZES.each do |name, (width, height)|
+    puts " * #{name} - #{width}x#{height}"
+  end
+
+  exit(-1)
+end
+
+options = {
+  layout: 'quarto',
+  orientation: :portrait,
+  forms_per_signature: nil,
+  page_size: 'LETTER',
+  margin: 36,
+  start_page: 1,
+  end_page: nil,
+  marks: true
+}
+
+output_filename = nil
+
+OptionParser.new do |parser|
+  parser.banner = "Usage: #{File.basename($PROGRAM_NAME)} [options] <input.pdf>"
+  parser.summary_indent = "  "
+  parser.summary_width = 22
+
+  parser.on('-l', '--layout LAYOUT',
+            'The form to use when laying out pages for imposition.',
+            "Default is \"#{options[:layout]}\".",
+            '(Specify "list" to see all available forms.)'
+  ) do |layout|
+    show_available_forms! if layout == 'list'
+    options[:layout] = layout
+  end
+
+  parser.on('-o', '--orient ORIENT',
+            'How each sheet should be oriented.',
+            'Possible options are "portrait" or "landscape".',
+            "Default is \"#{options[:orientation]}\"."
+  ) do |orientation|
+    options[:orientation] = orientation.to_sym
+  end
+
+  parser.on('-f', '--forms COUNT', Integer,
+            'The number of forms to use for each signature.',
+            'Default is dependent on the form used.'
+  ) do |count|
+    options[:forms_per_signature] = count
+  end
+
+  parser.on('-d', '--dimensions DIM',
+            'Either the name of a paper size, or a WxH (width/height)',
+            'specification. Measurements must be in points.',
+            "Default is \"#{options[:page_size]}\".",
+            '(Specify "list" to see all named paper sizes.)'
+  ) do |dim|
+    show_available_paper_sizes! if dim == 'list'
+    options[:page_size] = parse_page_size(dim)
+  end
+
+  parser.on('-m', '--margin SIZE', Integer,
+            'The minimum margin (in points) for the chosen form.',
+            "Default is #{options[:margin]} points."
+  ) do |size|
+    options[:margin] = size
+  end
+
+  parser.on('-s', '--start PAGE', Integer,
+            'The page at which to start imposing.',
+            "Default is #{options[:start_page]}."
+  ) do |page|
+    options[:start_page] = page
+  end
+
+  parser.on('-e', '--end PAGE', Integer,
+            'The page at which to stop imposing.',
+            "Default is the last page of the source document."
+  ) do |page|
+    options[:end_page] = page
+  end
+
+  parser.on('-M', '--[no-]marks',
+            'Whether or not to include registration marks.',
+            'Default is to include registration marks.'
+  ) do |marks|
+    options[:marks] = marks
+  end
+
+  parser.on('-O', '--output FILENAME',
+            'The name of the file to which to write the resulting PDF.',
+            'Default is the original filename with "imposed" appended.'
+  ) do |filename|
+    output_filename = filename
+  end
+
+  parser.on('-h', '--help',
+            'This help screen.'
+  ) do
+    puts parser.help
+    exit(-1)
+  end
+end.parse!
+
+filename = ARGV.first or abort 'please specify a PDF file to impose'
+imposer = Impose::Builder.new(filename, options)
+
+output_filename ||= File.basename(filename, '.pdf') + '-imposed.pdf'
+imposer.emit output_filename
