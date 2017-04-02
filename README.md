@@ -79,7 +79,7 @@ The eight-page card fold takes an eight-page document and lays out the pages on 
 
 <img src="layouts/card-fold8.png" width="400" />
 
-When printed, the page can be folded in half three times to make a simple pamphlet of the original eight pages. This form works best with the sheet in landscape orientation.
+When printed, the page can be folded and cut to make a simple pamphlet of the original eight pages. (Instructions for this type of construction may be found here: [http://www.wikihow.com/Make-a-Booklet-from-Paper](http://www.wikihow.com/Make-a-Booklet-from-Paper)). This form works best with the sheet in landscape orientation.
 
     $ impose -o landscape -l card-fold8 document.pdf
     # produces document-imposed.pdf
