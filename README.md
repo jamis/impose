@@ -11,6 +11,9 @@ This process of laying out pages in this way is called [_imposition_](https://en
 
     $ gem install pdf-impose
 
+## Caveats
+
+This has been tested on a variety of PDFs, and while it works great for most, there are some that it does not work correctly on. Pull requests would be welcome, to increase the number of PDFs that can correctly be imposed.
 
 ## Usage
 
