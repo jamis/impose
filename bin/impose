@@ -1,7 +1,7 @@
 #!/bin/sh ruby
 
 require 'optparse'
-require 'impose/builder'
+require 'pdf/impose/builder'
 
 def parse_page_size(dim)
   match = dim.match(/^(\d+)x(\d+)$/)
@@ -14,9 +14,9 @@ end
 
 def show_available_forms!
   puts 'Available forms (with aliases, if any):'
-  Impose::Builder::PRIMARY_LAYOUTS.keys.each do |key|
-    aliases = if Impose::Builder::ALIASES[key].any?
-                ' (' + Impose::Builder::ALIASES[key].join(', ') + ')'
+  PDF::Impose::Builder::PRIMARY_LAYOUTS.keys.each do |key|
+    aliases = if PDF::Impose::Builder::ALIASES[key].any?
+                ' (' + PDF::Impose::Builder::ALIASES[key].join(', ') + ')'
               else
                 ''
               end
@@ -132,7 +132,7 @@ OptionParser.new do |parser|
 end.parse!
 
 filename = ARGV.first or abort 'please specify a PDF file to impose'
-imposer = Impose::Builder.new(filename, options)
+imposer = PDF::Impose::Builder.new(filename, options)
 
 output_filename ||= File.basename(filename, '.pdf') + '-imposed.pdf'
 imposer.emit output_filename

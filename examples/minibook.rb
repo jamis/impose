@@ -5,7 +5,7 @@
 #
 # See https://twitter.com/jamis/status/847497088950599685
 
-require 'impose/builder'
+require 'pdf/impose/builder'
 
 # Notes on book structure:
 #
@@ -28,7 +28,7 @@ require 'impose/builder'
 # first six pages and produce content for the rest (138 or 162).
 
 module MiniBook
-  class TripleQuarto < Impose::Form
+  class TripleQuarto < PDF::Impose::Form
     per_signature 2
 
     cut_row 1, 2, 3, 4, 5, 6, 7
@@ -53,7 +53,7 @@ module MiniBook
           %w(.158 .155 .154 .159 .162 .151 .150 .163 .166 .147 .146 .167)
   end
 
-  class Octavo < Impose::Form
+  class Octavo < PDF::Impose::Form
     per_signature 2
 
     layout :page_numbers
@@ -80,8 +80,8 @@ end
 
 filename = ARGV[0] or abort 'please specify a filename to read'
 
-imposer = Impose::Builder.new(filename,
-                              orientation: :landscape,
-                              layout: MiniBook::Octavo)
+imposer = PDF::Impose::Builder.new(filename,
+                                   orientation: :landscape,
+                                   layout: MiniBook::Octavo)
 
 imposer.emit 'minibook.pdf'
