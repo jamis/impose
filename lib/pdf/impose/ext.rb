@@ -31,10 +31,10 @@ module PDF
 
           object_resources.keys.each do |resource|
             case object_resources[resource]
-            when Hash then
+            when ::Hash then
               resources[resource] ||= {}
               resources[resource].update(object_resources[resource])
-            when Array then
+            when ::Array then
               resources[resource] ||= []
               resources[resource] |= object_resources[resource]
             when PDF::Core::Reference then

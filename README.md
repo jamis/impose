@@ -1,20 +1,20 @@
-# Impose
+# PDF::Impose
 
-`Impose` is a utility and library for reformatting PDF files, in order to lay out multiple pages of the original document on a single page. The original pages are arranged in such a way that the new page may be folded and cut to produce a _signature_--a small booklet in which the pages are in the expected order. In this way, an existing PDF can be printed, folded, cut, and bound into a handmade book or booklet.
+`PDF::Impose` is a utility and library for reformatting PDF files, in order to lay out multiple pages of the original document on a single page. The original pages are arranged in such a way that the new page may be folded and cut to produce a _signature_--a small booklet in which the pages are in the expected order. In this way, an existing PDF can be printed, folded, cut, and bound into a handmade book or booklet.
 
 This process of laying out pages in this way is called [_imposition_](https://en.wikipedia.org/wiki/Imposition).
 
 
 ## Installation
 
-Impose and its dependencies may be installed via RubyGems:
+`PDF::Impose` and its dependencies may be installed via RubyGems:
 
     $ gem install pdf-impose
 
 
 ## Usage
 
-The easiest way to use Impose is via the command-line tool:
+The easiest way to use `PDF::Impose` is via the command-line tool:
 
     $ impose -h
     Usage: impose [options] <input.pdf>
@@ -53,7 +53,7 @@ This would produce a new PDF called `my-document-imposed.pdf`.
 
 The process of imposition takes a source document and lays out its pages in a particular form. The form used depends on how many pages you want to fit on a single sheet, and how many times you want to fold the paper to produce a signature.
 
-`Impose` supports several common imposition forms, which should satisfy most needs. If you need a specific layout, though, it is not hard to define a custom imposition form. (See the "minibook" example in this repository.)
+`PDF::Impose` supports several common imposition forms, which should satisfy most needs. If you need a specific layout, though, it is not hard to define a custom imposition form. (See the "minibook" example in this repository.)
 
 The following forms are supported by default.
 
