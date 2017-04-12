@@ -18,7 +18,8 @@ module PDF
       PRIMARY_LAYOUTS = {
         'card-fold4' => PDF::Impose::Forms::CardFold::Quarto,
         'card-fold8' => PDF::Impose::Forms::CardFold::Octavo,
-        'folio' => PDF::Impose::Forms::Folio,
+        'folio' => PDF::Impose::Forms::Folio::Standard,
+        'folio-1' => PDF::Impose::Forms::Folio::Recto,
         'quarto' => PDF::Impose::Forms::Quarto,
         'sexto' => PDF::Impose::Forms::Sexto,
         'octavo' => PDF::Impose::Forms::Octavo,
@@ -32,6 +33,7 @@ module PDF
         'card-fold4' => %w( card-fold ),
         'card-fold8' => %w( ),
         'folio' => %w( f fo ),
+        'folio-1' => %w( f1 fo1 ),
         'quarto' => %w( 4to ),
         'sexto' => %w( 6to 6mo ),
         'octavo' => %w( 8vo octavo ),
@@ -56,6 +58,7 @@ module PDF
       #   start_page: defaults to 1
       #   end_page: defaults to last page of source document
       #   marks: true or false, whether to include registration marks (default true)
+      #   repeat: how many times to repeat each page
       def initialize(source, options={})
         layout_arg = options[:layout]
 
@@ -70,6 +73,8 @@ module PDF
         @margin = options[:margin] || 36 # half inch
         @marks = options.fetch(:marks, true)
 
+        @repeat = options[:repeat] || 1
+
         @source = PDF::Reader.new(source)
         @destination = Prawn::Document.new(
           skip_page_creation: true, margin: 0,
@@ -78,7 +83,7 @@ module PDF
         @start_page = options[:start_page] || 1
         @end_page = [options[:end_page] || 1e6, @source.page_count].min
 
-        @page_count = @end_page - @start_page + 1
+        @page_count = (@end_page - @start_page + 1) * @repeat
 
         @forms_per_signature = options[:forms_per_signature] ||
                                @layout.per_signature
@@ -88,7 +93,7 @@ module PDF
                            @pages_per_signature
 
         @signatures = (1..@signature_count).map do |s|
-          first = (s - 1) * @pages_per_signature + @start_page
+          first = (s - 1) * @pages_per_signature
           last = first + @pages_per_signature - 1
           Signature.new(first, last)
         end
@@ -122,6 +127,8 @@ module PDF
         form_width = cell_width * @layout.columns_per_form
         form_height = cell_height * @layout.rows_per_form
 
+        pages = (@start_page..@end_page).flat_map { |n| [n - 1] * @repeat }
+
         recto = true
         @layout.layout_signatures(@signatures) do |form|
           left = if recto
@@ -137,7 +144,7 @@ module PDF
           form.each_page do |page|
             x = page.column * cell_width + left
             y = height - (page.row + 1) * cell_height - @margin
-            @destination.page.import_page @source, page.number - 1,
+            @destination.page.import_page @source, pages[page.number],
                                           x, y, cell_width, cell_height,
                                           page.mirror?
           end

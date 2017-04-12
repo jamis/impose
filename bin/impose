@@ -44,7 +44,8 @@ options = {
   margin: 36,
   start_page: 1,
   end_page: nil,
-  marks: true
+  marks: true,
+  repeat: 1
 }
 
 output_filename = nil
@@ -114,6 +115,13 @@ OptionParser.new do |parser|
             'Default is to include registration marks.'
   ) do |marks|
     options[:marks] = marks
+  end
+
+  parser.on('-r', '--repeat COUNT', Integer,
+            'How many times each page should be repeated.',
+            'Default is once for each page.'
+  ) do |count|
+    options[:repeat] = count
   end
 
   parser.on('-O', '--output FILENAME',

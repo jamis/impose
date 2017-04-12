@@ -47,6 +47,8 @@ module PDF
         end
 
         def import_page(reader, page_number, dx, dy, width, height, mirror)
+          return unless page_number
+
           ref = reader.objects.page_references[page_number]
           return unless ref
 
